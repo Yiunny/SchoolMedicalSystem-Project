@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolMedicalSystem.Core", "SchoolMedicalSystem.Core\SchoolMedicalSystem.Core.csproj", "{B332ED82-6D7E-4369-8312-3952CDD99314}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchoolMedicalSystem.WPF", "SchoolMedicalSystem.WPF\SchoolMedicalSystem.WPF.csproj", "{C256FDF4-4EC3-4F3B-8083-1D26526689DE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B332ED82-6D7E-4369-8312-3952CDD99314}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B332ED82-6D7E-4369-8312-3952CDD99314}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B332ED82-6D7E-4369-8312-3952CDD99314}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B332ED82-6D7E-4369-8312-3952CDD99314}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C256FDF4-4EC3-4F3B-8083-1D26526689DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C256FDF4-4EC3-4F3B-8083-1D26526689DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C256FDF4-4EC3-4F3B-8083-1D26526689DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C256FDF4-4EC3-4F3B-8083-1D26526689DE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6E0BDA25-80B8-4E0C-A99D-B4EB257DC278}
+	EndGlobalSection
+EndGlobal
