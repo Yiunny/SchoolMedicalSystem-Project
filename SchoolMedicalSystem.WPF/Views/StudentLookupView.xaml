@@ -51,6 +51,8 @@
                     <TextBlock><Run FontWeight="Bold">SĐT Phụ huynh:</Run> <Run Text="{Binding SelectedStudent.ParentPhoneNumber}" Foreground="Red" FontWeight="Bold"/></TextBlock>
                     <TextBlock Margin="0,10,0,0" FontWeight="Bold">Tiền sử dị ứng:</TextBlock>
                     <TextBlock Text="{Binding SelectedStudent.Allergies}" TextWrapping="Wrap" Background="MistyRose" Padding="5"/>
+                    <Separator/>
+                    <Button Content="Xem Lịch sử Chi tiết" Margin="0,15,0,0" Command="{Binding ViewHistoryCommand}"/>
                 </StackPanel>
             </ScrollViewer>
         </Border>

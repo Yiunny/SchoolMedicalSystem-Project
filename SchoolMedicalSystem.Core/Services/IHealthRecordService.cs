@@ -11,6 +11,8 @@ namespace SchoolMedicalSystem.Core.Services
     {
         Task CreateHealthRecordAsync(HealthRecord record);
         Task UpdateHealthRecordAsync(HealthRecord record); 
-        Task<HealthRecord> GetByPlanAndStudentIdAsync(int planId, int studentId); 
+        Task<HealthRecord> GetByPlanAndStudentIdAsync(int planId, int studentId);
+
+        Task<IEnumerable<HealthRecord>> GetHistoryByStudentIdAsync(int studentId);
     }
 }

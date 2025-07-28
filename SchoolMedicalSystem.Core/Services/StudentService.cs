@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OfficeOpenXml;
 using SchoolMedicalSystem.Core.Models;
 using SchoolMedicalSystem.Core.Repositories;
 
@@ -19,28 +22,20 @@ namespace SchoolMedicalSystem.Core.Services
 
         public async Task AddStudentAsync(Student student)
         {
-            // 1. Lấy tiền tố từ năm sinh (ví dụ: 2017 -> "17")
             string yearPrefix = student.DateOfBirth.ToString("yy");
-
-            // 2. Lấy tất cả học sinh để tìm mã lớn nhất trong cùng năm
             var allStudents = await _studentRepository.GetAllAsync();
-
-            // 3. Tìm số thứ tự lớn nhất của các học sinh có cùng năm sinh
             var maxSequence = allStudents
-                .Where(s => s.StudentCode.StartsWith(yearPrefix)) // Lọc các mã bắt đầu bằng "17"
-                .Select(s => {
-                    // Thử chuyển đổi 3 số cuối thành số nguyên
+                .Where(s => s.StudentCode.StartsWith(yearPrefix))
+                .Select(s =>
+                {
                     int.TryParse(s.StudentCode.Substring(2), out int sequence);
                     return sequence;
                 })
-                .DefaultIfEmpty(0) // Nếu chưa có ai trong năm, bắt đầu từ 0
+                .DefaultIfEmpty(0)
                 .Max();
 
-            // 4. Tạo mã mới
             int newSequence = maxSequence + 1;
-            student.StudentCode = $"{yearPrefix}{newSequence:D3}"; // D3 để đảm bảo có 3 chữ số (ví dụ: 001, 002)
-
-            // 5. Lưu học sinh với mã mới vào database
+            student.StudentCode = $"{yearPrefix}{newSequence:D3}";
             await _studentRepository.AddAsync(student);
         }
 
@@ -77,6 +72,62 @@ namespace SchoolMedicalSystem.Core.Services
                 s.FullName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
                 s.StudentCode.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
             );
+        }
+
+        public async Task<string> ImportStudentsFromExcelAsync(string filePath)
+        {
+            var newStudents = new List<Student>();
+
+            // Correct way to set the license for EPPlus
+            ExcelPackage.License.SetNonCommercialPersonal("School Medical System Project");
+
+            try
+            {
+                using (var package = new ExcelPackage(new FileInfo(filePath)))
+                {
+                    var worksheet = package.Workbook.Worksheets.FirstOrDefault();
+                    if (worksheet == null)
+                    {
+                        return "File Excel không hợp lệ hoặc không có worksheet nào.";
+                    }
+
+                    int rowCount = worksheet.Dimension.Rows;
+                    for (int row = 2; row <= rowCount; row++)
+                    {
+                        try
+                        {
+                            var student = new Student
+                            {
+                                FullName = worksheet.Cells[row, 1].GetValue<string>(),
+                                DateOfBirth = worksheet.Cells[row, 2].GetValue<DateTime>(),
+                                Gender = worksheet.Cells[row, 3].GetValue<string>() == "Nam" ? Gender.Nam : Gender.Nữ,
+                                ClassName = worksheet.Cells[row, 4].GetValue<string>(),
+                                Address = worksheet.Cells[row, 5].GetValue<string>(),
+                                ParentName = worksheet.Cells[row, 6].GetValue<string>(),
+                                ParentPhoneNumber = worksheet.Cells[row, 7].GetValue<string>(),
+                                Allergies = worksheet.Cells[row, 8].GetValue<string>(),
+                                IsActive = true
+                            };
+                            newStudents.Add(student);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Lỗi ở dòng {row}: {ex.Message}");
+                        }
+                    }
+                }
+
+                foreach (var student in newStudents)
+                {
+                    await AddStudentAsync(student);
+                }
+
+                return $"Import thành công {newStudents.Count} học sinh.";
+            }
+            catch (Exception ex)
+            {
+                return $"Đã xảy ra lỗi khi đọc file: {ex.Message}";
+            }
         }
     }
 }

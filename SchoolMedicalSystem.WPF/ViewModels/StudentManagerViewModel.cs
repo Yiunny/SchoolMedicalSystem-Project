@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Win32;
 using SchoolMedicalSystem.Core.Models;
 using SchoolMedicalSystem.Core.Services;
 using SchoolMedicalSystem.WPF.Views;
@@ -52,7 +53,7 @@ namespace SchoolMedicalSystem.WPF.ViewModels
         public ICommand DeleteStudentCommand { get; }
         public ICommand FilterCommand { get; }
         public ICommand ClearFilterCommand { get; }
-
+        public ICommand ImportExcelCommand { get; }
         public StudentManagerViewModel(IStudentService studentService, IServiceProvider serviceProvider)
         {
             _studentService = studentService;
@@ -67,6 +68,7 @@ namespace SchoolMedicalSystem.WPF.ViewModels
 
             FilterCommand = new RelayCommand(p => ApplyFilter());
             ClearFilterCommand = new RelayCommand(p => ClearFilter());
+            ImportExcelCommand = new RelayCommand(async p => await ImportExcel());  
 
             _ = LoadDataAsync();
         }
@@ -138,6 +140,19 @@ namespace SchoolMedicalSystem.WPF.ViewModels
             SearchName = string.Empty;
             SelectedClass = null; // hoặc string.Empty tùy vào ComboBox
             ApplyFilter();
+        }
+
+        private async Task ImportExcel()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Excel Files|*.xlsx;*.xls";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                string filePath = openFileDialog.FileName;
+                string result = await _studentService.ImportStudentsFromExcelAsync(filePath);
+                MessageBox.Show(result);
+                await LoadDataAsync(); // Tải lại danh sách sau khi import
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

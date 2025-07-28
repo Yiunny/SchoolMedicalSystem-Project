@@ -1,0 +1,65 @@
+﻿<UserControl x:Class="SchoolMedicalSystem.WPF.Views.HomeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:models="clr-namespace:SchoolMedicalSystem.Core.Models;assembly=SchoolMedicalSystem.Core"
+             mc:Ignorable="d" 
+             d:DesignHeight="500" d:DesignWidth="800"
+             Background="#F5F5F5">
+    <Grid Margin="30">
+        <StackPanel>
+            <TextBlock Text="{Binding WelcomeMessage}" FontSize="28" FontWeight="Bold" Foreground="#007ACC"/>
+            <TextBlock Text="{Binding CurrentDateTime}" FontSize="18" Foreground="Gray" Margin="0,5,0,0"/>
+            <Separator Margin="0,25"/>
+
+            <StackPanel Visibility="{Binding DataContext.CurrentUserRole, RelativeSource={RelativeSource AncestorType=Window}, ConverterParameter={x:Static models:UserRole.Manager}, Converter={StaticResource RoleToVisibilityConverter}}">
+                <TextBlock Text="Thông tin nhanh:" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,15"/>
+                <UniformGrid Columns="2" Rows="1">
+                    <Border Background="White" CornerRadius="8" Padding="20" Margin="10">
+                        <Border.Effect>
+                            <DropShadowEffect ShadowDepth="2" Color="Black" Opacity="0.1" BlurRadius="10"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="Tổng số Học sinh" FontSize="16" Foreground="#555"/>
+                            <TextBlock Text="{Binding TotalStudents}" FontSize="36" FontWeight="Bold" Foreground="#007ACC" Margin="0,5,0,0"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Background="White" CornerRadius="8" Padding="20" Margin="10">
+                        <Border.Effect>
+                            <DropShadowEffect ShadowDepth="2" Color="Black" Opacity="0.1" BlurRadius="10"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="Kế hoạch đang diễn ra" FontSize="16" Foreground="#555"/>
+                            <TextBlock Text="{Binding InProgressPlans}" FontSize="36" FontWeight="Bold" Foreground="OrangeRed" Margin="0,5,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+            </StackPanel>
+
+            <StackPanel Visibility="{Binding DataContext.CurrentUserRole, RelativeSource={RelativeSource AncestorType=Window}, ConverterParameter={x:Static models:UserRole.Nurse}, Converter={StaticResource RoleToVisibilityConverter}}">
+                <TextBlock Text="Công việc hôm nay:" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,15"/>
+                <Border Background="White" CornerRadius="8" Padding="20">
+                    <Border.Effect>
+                        <DropShadowEffect ShadowDepth="2" Color="Black" Opacity="0.1" BlurRadius="10"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <ListView ItemsSource="{Binding TodaysPlans}" BorderThickness="0" Background="Transparent">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Tên Kế hoạch" DisplayMemberBinding="{Binding PlanName}" Width="300"/>
+                                    <GridViewColumn Header="Lớp" DisplayMemberBinding="{Binding ClassName}" Width="100"/>
+                                    <GridViewColumn Header="Trạng thái" DisplayMemberBinding="{Binding Status}" Width="150"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                        <TextBlock Text="🎉 Không có kế hoạch nào cho hôm nay!" 
+                                   FontStyle="Italic" Margin="5" Padding="10" Background="#F9F9F9"
+                                   Visibility="{Binding TodaysPlans.Count, Converter={StaticResource InverseCountToVisibilityConverter}}"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+        </StackPanel>
+    </Grid>
+</UserControl>

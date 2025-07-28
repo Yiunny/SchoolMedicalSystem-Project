@@ -25,5 +25,9 @@ namespace SchoolMedicalSystem.Core.Models
         public int HeartRate { get; set; } // Nhịp tim (lần/phút)
 
         public string? NurseNotes { get; set; } // Ghi chú chung vẫn giữ lại
+
+
+        public double Bmi { get; set; }
+        public string BmiStatus { get; set; }
     }
 }

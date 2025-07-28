@@ -35,5 +35,13 @@ namespace SchoolMedicalSystem.Core.Repositories
             _context.HealthRecords.Update(record);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<HealthRecord>> GetByStudentIdAsync(int studentId)
+        {
+            return await _context.HealthRecords
+                .Where(hr => hr.StudentId == studentId)
+                .OrderBy(hr => hr.CheckupDate)
+                .ToListAsync();
+        }
     }
 }

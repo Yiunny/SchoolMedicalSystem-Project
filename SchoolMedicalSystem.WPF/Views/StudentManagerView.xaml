@@ -42,6 +42,8 @@
             <Button Content="Thêm" Width="80" Margin="0,0,10,0" Command="{Binding AddStudentCommand}"/>
             <Button Content="Sửa" Width="80" Margin="0,0,10,0" Command="{Binding EditStudentCommand}"/>
             <Button Content="Xóa" Width="80" Command="{Binding DeleteStudentCommand}"/>
+
+            <Button Content="Import Excel" Width="100" Margin="20,0,0,0" Command="{Binding ImportExcelCommand}" Background="SeaGreen" Foreground="White"/>
         </StackPanel>
     </Grid>
 </UserControl>

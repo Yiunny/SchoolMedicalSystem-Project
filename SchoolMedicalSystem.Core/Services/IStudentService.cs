@@ -14,6 +14,7 @@ namespace SchoolMedicalSystem.Core.Services
         Task UpdateStudentAsync(Student student);
         Task DeleteStudentAsync(int studentId);
         Task<IEnumerable<Student>> GetStudentsByClassNameAsync(string className);
-        Task<IEnumerable<Student>> SearchStudentsAsync(string searchTerm);  
+        Task<IEnumerable<Student>> SearchStudentsAsync(string searchTerm);
+        Task<string> ImportStudentsFromExcelAsync(string filePath);  
     }
 }

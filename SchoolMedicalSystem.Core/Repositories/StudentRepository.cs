@@ -37,7 +37,8 @@ namespace SchoolMedicalSystem.Core.Repositories
         public async Task<IEnumerable<Student>> GetAllAsync()
         {
 
-            return await _context.Students.Where(s => s.IsActive).ToListAsync();
+            //return await _context.Students.Where(s => s.IsActive).ToListAsync();
+            return await _context.Students.ToListAsync();
         }
 
         public async Task<Student> GetByIdAsync(int id)

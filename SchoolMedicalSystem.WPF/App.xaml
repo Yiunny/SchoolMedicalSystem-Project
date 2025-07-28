@@ -3,32 +3,49 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:SchoolMedicalSystem.WPF"
              xmlns:views="clr-namespace:SchoolMedicalSystem.WPF.Views"
-             xmlns:vms="clr-namespace:SchoolMedicalSystem.WPF.ViewModels">
+             xmlns:vms="clr-namespace:SchoolMedicalSystem.WPF.ViewModels"
+             xmlns:converters="clr-namespace:SchoolMedicalSystem.WPF.Converters">
     <Application.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Indigo.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
+            </ResourceDictionary.MergedDictionaries>
 
-        <DataTemplate DataType="{x:Type vms:StudentManagerViewModel}">
-            <views:StudentManagerView/>
-        </DataTemplate>
+            <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+            <converters:RoleToVisibilityConverter x:Key="RoleToVisibilityConverter"/>
+            <converters:InverseCountToVisibilityConverter x:Key="InverseCountToVisibilityConverter"/>
 
-        <DataTemplate DataType="{x:Type vms:AccountManagerViewModel}">
-            <views:AccountManagerView/>
-        </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:HomeViewModel}">
+                <views:HomeView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:StudentManagerViewModel}">
+                <views:StudentManagerView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:AccountManagerViewModel}">
+                <views:AccountManagerView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:CheckupPlanViewModel}">
+                <views:CheckupPlanView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:NurseDashboardViewModel}">
+                <views:NurseDashboardView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:ReportViewModel}">
+                <views:ReportView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:CheckupExecutionViewModel}">
+                <views:CheckupExecutionView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:StudentLookupViewModel}">
+                <views:StudentLookupView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:StudentHistoryViewModel}">
+                <views:StudentHistoryWindow/>
+            </DataTemplate>
 
-        <DataTemplate DataType="{x:Type vms:CheckupPlanViewModel}">
-            <views:CheckupPlanView/>
-        </DataTemplate>
-
-        <DataTemplate DataType="{x:Type vms:NurseDashboardViewModel}">
-            <views:NurseDashboardView/>
-        </DataTemplate>
-
-        <DataTemplate DataType="{x:Type vms:CheckupExecutionViewModel}">
-            <views:CheckupExecutionView/>
-        </DataTemplate>
-
-        <DataTemplate DataType="{x:Type vms:StudentLookupViewModel}">
-            <views:StudentLookupView/>
-        </DataTemplate>
+        </ResourceDictionary>
     </Application.Resources>
-</Application>  
+</Application>

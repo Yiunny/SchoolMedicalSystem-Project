@@ -37,7 +37,7 @@ namespace SchoolMedicalSystem.Core.Services
                 case UserRole.Manager:
                 case UserRole.Nurse:
                     // Vai trò hợp lệ, cho phép đăng nhập
-                    return new LoginResult { IsSuccess = true, UserRole = user.Role };
+                    return new LoginResult { IsSuccess = true, User = user };
 
                 case UserRole.Admin:
                 case UserRole.Parent:

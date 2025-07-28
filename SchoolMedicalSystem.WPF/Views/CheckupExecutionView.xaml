@@ -1,11 +1,24 @@
 ﻿<UserControl x:Class="SchoolMedicalSystem.WPF.Views.CheckupExecutionView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             mc:Ignorable="d" 
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:validation="clr-namespace:SchoolMedicalSystem.WPF.ValidationRules"
+             mc:Ignorable="d" 
              d:DesignHeight="500" d:DesignWidth="800">
     <Grid Margin="15">
+        <Grid.Resources>
+            <Style TargetType="TextBox">
+                <Style.Triggers>
+                    <Trigger Property="Validation.HasError" Value="True">
+                        <Setter Property="BorderBrush" Value="Red"/>
+                        <Setter Property="ToolTip" 
+                                Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Resources>
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="250"/>
             <ColumnDefinition Width="*"/>
@@ -14,21 +27,36 @@
         <DockPanel Grid.Column="0">
             <TextBlock DockPanel.Dock="Top" Text="{Binding PlanTitle}" FontWeight="Bold" Margin="0,0,0,10" TextWrapping="Wrap"/>
             <Button DockPanel.Dock="Bottom" Content="Hoàn thành Kế hoạch" Margin="0,10,0,0"
-            Command="{Binding CompletePlanCommand}"/>
-            <ListView ItemsSource="{Binding Students}" SelectedItem="{Binding SelectedStudent}">
+                    Command="{Binding CompletePlanCommand}"/>
+
+            <ListView ItemsSource="{Binding Students}" SelectedItem="{Binding SelectedStudentItem}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding FullName}"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding FullName}">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="Black"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsCompleted}" Value="True">
+                                                <Setter Property="Foreground" Value="Gray"/>
+                                                <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <TextBlock Text=" ✅" Foreground="Green" Visibility="{Binding IsCompleted, Converter={StaticResource BoolToVis}}"/>
+                        </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            
         </DockPanel>
 
         <ScrollViewer Grid.Column="1" Margin="15,0,0,0" VerticalScrollBarVisibility="Auto">
             <StackPanel IsEnabled="{Binding IsFormEnabled}">
                 <TextBlock Text="Thông tin khám bệnh cho:" Margin="0,0,0,5"/>
-                <TextBlock Text="{Binding SelectedStudent.FullName}" FontWeight="Bold" FontSize="16" Margin="0,0,0,15"/>
+                <TextBlock Text="{Binding SelectedStudentItem.FullName}" FontWeight="Bold" FontSize="16" Margin="0,0,0,15"/>
 
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -37,11 +65,27 @@
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" Margin="0,0,10,0">
                         <TextBlock Text="Chiều cao (cm):"/>
-                        <TextBox Margin="0,5,0,10" Text="{Binding CurrentHealthRecord.Height, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox Margin="0,5,0,10">
+                            <TextBox.Text>
+                                <Binding Path="CurrentHealthRecord.Height" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <validation:PositiveNumberValidationRule/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Margin="10,0,0,0">
                         <TextBlock Text="Cân nặng (kg):"/>
-                        <TextBox Margin="0,5,0,10" Text="{Binding CurrentHealthRecord.Weight, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox Margin="0,5,0,10">
+                            <TextBox.Text>
+                                <Binding Path="CurrentHealthRecord.Weight" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <validation:PositiveNumberValidationRule/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
                     </StackPanel>
                 </Grid>
 
@@ -52,16 +96,34 @@
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" Margin="0,0,10,0">
                         <TextBlock Text="Huyết áp (mmHg):"/>
-                        <TextBox Margin="0,5,0,10" Text="{Binding CurrentHealthRecord.BloodPressure, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox Margin="0,5,0,10">
+                            <TextBox.Text>
+                                <Binding Path="CurrentHealthRecord.BloodPressure" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <validation:PositiveNumberValidationRule/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Margin="10,0,0,0">
                         <TextBlock Text="Nhịp tim (lần/phút):"/>
-                        <TextBox Margin="0,5,0,10" Text="{Binding CurrentHealthRecord.HeartRate, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox Margin="0,5,0,10">
+                            <TextBox.Text>
+                                <Binding Path="CurrentHealthRecord.HeartRate" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <validation:PositiveNumberValidationRule/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
                     </StackPanel>
                 </Grid>
 
                 <TextBlock Text="Thị lực:"/>
-                <TextBox Margin="0,5,0,10" Text="{Binding CurrentHealthRecord.Vision, UpdateSourceTrigger=PropertyChanged}"/>
+                <ComboBox Margin="0,5,0,10" 
+                  ItemsSource="{Binding VisionLevels}" 
+                  SelectedItem="{Binding CurrentHealthRecord.Vision}"/>
 
                 <TextBlock Text="Tình trạng Răng-Miệng:"/>
                 <TextBox Margin="0,5,0,10" Text="{Binding CurrentHealthRecord.DentalStatus, UpdateSourceTrigger=PropertyChanged}"/>
@@ -69,6 +131,13 @@
                 <TextBlock Text="Ghi chú thêm:"/>
                 <TextBox Margin="0,5,0,10" Text="{Binding CurrentHealthRecord.NurseNotes, UpdateSourceTrigger=PropertyChanged}" Height="40" TextWrapping="Wrap" AcceptsReturn="True"/>
 
+                <Separator Margin="0,10"/>
+                <TextBlock Margin="0,5,0,0">
+                    <Run Text="Chỉ số BMI:" FontWeight="Bold"/>
+                    <Run Text="{Binding CurrentHealthRecord.Bmi, StringFormat='{}{0:F2}'}"/>
+                    <Run Text="-"/>
+                    <Run Text="{Binding CurrentHealthRecord.BmiStatus}" FontStyle="Italic"/>
+                </TextBlock>
                 <Button Content="Lưu Hồ sơ" Width="100" HorizontalAlignment="Left" Command="{Binding SaveRecordCommand}"/>
             </StackPanel>
         </ScrollViewer>

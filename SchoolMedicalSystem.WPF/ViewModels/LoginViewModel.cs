@@ -61,7 +61,7 @@ namespace SchoolMedicalSystem.WPF.ViewModels
             {
                 var mainViewModel = _serviceProvider.GetService<MainViewModel>();
                 // Khởi tạo MainViewModel với vai trò của người dùng
-                mainViewModel.Initialize(result.UserRole.Value);
+                mainViewModel.Initialize(result.User);
 
                 // Lấy MainWindow và gán DataContext của nó là MainViewModel
                 var mainWindow = _serviceProvider.GetService<MainWindow>();

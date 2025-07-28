@@ -3,11 +3,12 @@ using SchoolMedicalSystem.Core.Services;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using Microsoft.Extensions.DependencyInjection; // Thêm using này
+using Microsoft.Extensions.DependencyInjection;
 
 namespace SchoolMedicalSystem.WPF.ViewModels
 {
@@ -15,28 +16,28 @@ namespace SchoolMedicalSystem.WPF.ViewModels
     {
         private readonly IStudentService _studentService;
         private readonly IHealthRecordService _healthRecordService;
-        private readonly ICheckupPlanService _planService; // Thêm service mới
-        private readonly IServiceProvider _serviceProvider; // Thêm service provider
-        private readonly MainViewModel _mainViewModel; // Thêm MainViewModel
+        private readonly ICheckupPlanService _planService;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly MainViewModel _mainViewModel;
 
         private CheckupPlan _currentPlan;
-        private Student _selectedStudent;
+        private StudentCheckupItemViewModel _selectedStudentItem;
         private HealthRecord _currentHealthRecord;
-        private bool _isEditingRecord; // Cờ để biết đang sửa hay thêm mới
-
-        public ObservableCollection<Student> Students { get; } = new ObservableCollection<Student>();
+        private bool _isEditingRecord;
+        public List<string> VisionLevels { get; } = new List<string>
+            { "1/10", "2/10", "3/10", "4/10", "5/10", "6/10", "7/10", "8/10", "9/10", "10/10" };
+        public ObservableCollection<StudentCheckupItemViewModel> Students { get; } = new ObservableCollection<StudentCheckupItemViewModel>();
         public string PlanTitle { get; private set; }
-        public bool IsFormEnabled => SelectedStudent != null;
+        public bool IsFormEnabled => SelectedStudentItem != null;
 
-        public Student SelectedStudent
+        public StudentCheckupItemViewModel SelectedStudentItem
         {
-            get => _selectedStudent;
+            get => _selectedStudentItem;
             set
             {
-                _selectedStudent = value;
+                _selectedStudentItem = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(IsFormEnabled));
-                // Khi chọn một học sinh, kiểm tra xem đã có hồ sơ chưa
                 _ = LoadHealthRecordForSelectedStudent();
             }
         }
@@ -48,18 +49,18 @@ namespace SchoolMedicalSystem.WPF.ViewModels
         }
 
         public ICommand SaveRecordCommand { get; }
-        public ICommand CompletePlanCommand { get; } // Command mới
+        public ICommand CompletePlanCommand { get; }
 
         public CheckupExecutionViewModel(IStudentService studentService, IHealthRecordService healthRecordService, ICheckupPlanService planService, IServiceProvider serviceProvider, MainViewModel mainViewModel)
         {
             _studentService = studentService;
             _healthRecordService = healthRecordService;
-            _planService = planService; // Gán service mới
+            _planService = planService;
             _serviceProvider = serviceProvider;
             _mainViewModel = mainViewModel;
 
             SaveRecordCommand = new RelayCommand(async p => await SaveRecord(), p => CanSave());
-            CompletePlanCommand = new RelayCommand(async p => await CompletePlan()); // Khởi tạo command mới
+            CompletePlanCommand = new RelayCommand(async p => await CompletePlan());
         }
 
         public async Task InitializeAsync(CheckupPlan plan)
@@ -68,7 +69,6 @@ namespace SchoolMedicalSystem.WPF.ViewModels
             PlanTitle = $"Danh sách học sinh lớp: {plan.ClassName}";
             OnPropertyChanged(nameof(PlanTitle));
 
-            // Cập nhật trạng thái kế hoạch thành "Đang tiến hành"
             if (_currentPlan.Status == CheckupPlanStatus.Planned)
             {
                 await _planService.UpdatePlanStatusAsync(_currentPlan.Id, CheckupPlanStatus.InProgress);
@@ -79,34 +79,38 @@ namespace SchoolMedicalSystem.WPF.ViewModels
             var studentsInClass = await _studentService.GetStudentsByClassNameAsync(plan.ClassName);
             foreach (var student in studentsInClass)
             {
-                Students.Add(student);
+                var itemViewModel = new StudentCheckupItemViewModel(student);
+                var existingRecord = await _healthRecordService.GetByPlanAndStudentIdAsync(_currentPlan.Id, student.Id);
+                if (existingRecord != null)
+                {
+                    itemViewModel.IsCompleted = true;
+                }
+                Students.Add(itemViewModel);
             }
         }
 
         private async Task LoadHealthRecordForSelectedStudent()
         {
-            if (_selectedStudent == null) return;
+            if (SelectedStudentItem == null) return;
 
-            // Tìm hồ sơ đã có cho học sinh này trong kế hoạch này
-            var existingRecord = await _healthRecordService.GetByPlanAndStudentIdAsync(_currentPlan.Id, _selectedStudent.Id);
+            var student = SelectedStudentItem.Student;
+            var existingRecord = await _healthRecordService.GetByPlanAndStudentIdAsync(_currentPlan.Id, student.Id);
 
             if (existingRecord != null)
             {
-                // Nếu có, tải lên để sửa
                 CurrentHealthRecord = existingRecord;
                 _isEditingRecord = true;
             }
             else
             {
-                // Nếu không, tạo một hồ sơ mới để nhập liệu
-                CurrentHealthRecord = new HealthRecord { StudentId = _selectedStudent.Id };
+                CurrentHealthRecord = new HealthRecord { StudentId = student.Id };
                 _isEditingRecord = false;
             }
         }
 
         private bool CanSave()
         {
-            return SelectedStudent != null && CurrentHealthRecord != null && CurrentHealthRecord.Height > 0 && CurrentHealthRecord.Weight > 0;
+            return SelectedStudentItem != null && CurrentHealthRecord != null && CurrentHealthRecord.Height > 0 && CurrentHealthRecord.Weight > 0;
         }
 
         private async Task SaveRecord()
@@ -124,18 +128,19 @@ namespace SchoolMedicalSystem.WPF.ViewModels
                 await _healthRecordService.CreateHealthRecordAsync(CurrentHealthRecord);
             }
 
-            MessageBox.Show($"Đã lưu hồ sơ cho học sinh: {SelectedStudent.FullName}");
+            MessageBox.Show($"Đã lưu hồ sơ cho học sinh: {SelectedStudentItem.FullName}");
 
-            // Tự động chuyển sang học sinh tiếp theo
-            int currentIndex = Students.IndexOf(SelectedStudent);
-            if (currentIndex < Students.Count - 1)
+            SelectedStudentItem.IsCompleted = true;
+
+            var nextStudent = Students.FirstOrDefault(s => !s.IsCompleted);
+            if (nextStudent != null)
             {
-                SelectedStudent = Students[currentIndex + 1];
+                SelectedStudentItem = nextStudent;
             }
             else
             {
-                MessageBox.Show("Đã khám cho học sinh cuối cùng trong danh sách!");
-                SelectedStudent = null;
+                MessageBox.Show("Đã khám cho tất cả học sinh trong danh sách!");
+                SelectedStudentItem = null;
             }
         }
 
@@ -144,7 +149,6 @@ namespace SchoolMedicalSystem.WPF.ViewModels
             if (MessageBox.Show("Bạn có chắc chắn muốn hoàn thành và đóng kế hoạch khám này?", "Xác nhận", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 await _planService.UpdatePlanStatusAsync(_currentPlan.Id, CheckupPlanStatus.Completed);
-                // Quay trở về màn hình Dashboard của Y tá
                 _mainViewModel.CurrentView = _serviceProvider.GetService<NurseDashboardViewModel>();
             }
         }

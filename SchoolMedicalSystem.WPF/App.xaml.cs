@@ -43,15 +43,18 @@ namespace SchoolMedicalSystem.WPF
             services.AddTransient<IHealthRecordService, HealthRecordService>();
 
             // 4. Đăng ký ViewModels
-            // MainViewModel PHẢI LÀ SINGLETON
+            // MainViewModel PHẢI LÀ SINGLETON ĐỂ LÀM "BỘ NÃO" TRUNG TÂM
             services.AddSingleton<MainViewModel>();
 
-            // Các ViewModel khác là Transient
+            // Các ViewModel khác có thể là Transient
             services.AddTransient<StudentDetailViewModel>();
             services.AddTransient<PlanDetailViewModel>();
-            services.AddTransient<CheckupExecutionViewModel>();
             services.AddTransient<StudentLookupViewModel>();
             services.AddTransient<AccountManagerViewModel>();
+            services.AddTransient<StudentHistoryViewModel>();
+            services.AddTransient<ReportViewModel>();
+            services.AddTransient<HomeViewModel>();
+            services.AddTransient<CheckupExecutionViewModel>();
 
             // Các ViewModel cần inject IServiceProvider hoặc MainViewModel sẽ dùng factory
             services.AddTransient(provider => new LoginViewModel(
@@ -77,6 +80,7 @@ namespace SchoolMedicalSystem.WPF
             services.AddTransient<MainWindow>();
             services.AddTransient<StudentDetailWindow>();
             services.AddTransient<PlanDetailWindow>();
+            services.AddTransient<StudentHistoryWindow>();
         }
 
         protected override void OnStartup(StartupEventArgs e)

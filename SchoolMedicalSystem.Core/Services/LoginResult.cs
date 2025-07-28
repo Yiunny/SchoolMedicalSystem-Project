@@ -11,6 +11,6 @@ namespace SchoolMedicalSystem.Core.Services
     {
         public bool IsSuccess { get; set; }
         public string ErrorMessage { get; set; }
-        public UserRole? UserRole { get; set; }
+        public User User { get; set; }
     }
 }
