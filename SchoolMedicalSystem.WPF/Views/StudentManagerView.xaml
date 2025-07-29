@@ -4,8 +4,10 @@
              mc:Ignorable="d" 
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Margin="15">
+             d:DesignHeight="450" d:DesignWidth="800"
+             Background="Transparent">
+
+    <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -13,37 +15,213 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="QUẢN LÝ HỌC SINH" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+        <!-- Header -->
+        <Border Grid.Row="0" Style="{StaticResource CardStyle}" Margin="0,0,0,20">
+            <StackPanel Orientation="Horizontal">
+                <Border Width="50" Height="50" Background="{StaticResource PrimaryBrush}" 
+                        CornerRadius="25" Margin="0,0,15,0">
+                    <TextBlock Text="👥" FontSize="24" HorizontalAlignment="Center" 
+                               VerticalAlignment="Center" Foreground="White"/>
+                </Border>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="QUẢN LÝ HỌC SINH" FontSize="24" FontWeight="Bold" 
+                               Foreground="{StaticResource PrimaryBrush}"/>
+                    <TextBlock Text="Quản lý thông tin học sinh trong hệ thống" FontSize="14" 
+                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
 
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
-            <TextBlock Text="Tìm theo tên:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-            <TextBox Width="150" Text="{Binding SearchName, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"/>
+        <!-- Search and Filter Panel -->
+        <Border Grid.Row="1" Style="{StaticResource CardStyle}" Margin="0,0,0,20">
+            <StackPanel>
+                <TextBlock Text="🔍 Tìm kiếm và lọc" FontSize="16" FontWeight="SemiBold" 
+                           Margin="0,0,0,15" Foreground="{StaticResource TextPrimaryBrush}"/>
 
-            <TextBlock Text="Lọc theo lớp:" VerticalAlignment="Center" Margin="20,0,5,0"/>
-            <ComboBox Width="120" ItemsSource="{Binding ClassList}" SelectedItem="{Binding SelectedClass}"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-            <Button Content="Lọc" Width="60" Margin="10,0,0,0" Command="{Binding FilterCommand}"/>
-            <Button Content="Xóa lọc" Width="60" Margin="5,0,0,0" Command="{Binding ClearFilterCommand}"/>
-        </StackPanel>
+                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                        <TextBlock Text="Tìm theo tên:" Margin="0,0,0,5" 
+                                   Foreground="{StaticResource TextPrimaryBrush}" FontWeight="Medium"/>
+                        <TextBox Text="{Binding SearchName, UpdateSourceTrigger=PropertyChanged}" 
+                                 Style="{StaticResource ModernTextBoxStyle}"/>
+                    </StackPanel>
 
-        <DataGrid Grid.Row="2" ItemsSource="{Binding Students}" SelectedItem="{Binding SelectedStudent}" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Mã HS" Binding="{Binding StudentCode}" Width="Auto"/>
-                <DataGridTextColumn Header="Họ và Tên" Binding="{Binding FullName}" Width="*"/>
-                <DataGridTextColumn Header="Ngày Sinh" Binding="{Binding DateOfBirth, StringFormat='dd/MM/yyyy'}"/>
-                <DataGridTextColumn Header="Giới tính" Binding="{Binding Gender}"/>
-                <DataGridTextColumn Header="Lớp" Binding="{Binding ClassName}"/>
-                <DataGridTextColumn Header="SĐT Phụ huynh" Binding="{Binding ParentPhoneNumber}" Width="*"/>
-                <DataGridTextColumn Header="Địa chỉ" Binding="{Binding Address}" Width="*"/>
-            </DataGrid.Columns>
-        </DataGrid>
+                    <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                        <TextBlock Text="Lọc theo lớp:" Margin="0,0,0,5" 
+                                   Foreground="{StaticResource TextPrimaryBrush}" FontWeight="Medium"/>
+                        <ComboBox ItemsSource="{Binding ClassList}" SelectedItem="{Binding SelectedClass}">
+                            <ComboBox.Style>
+                                <Style TargetType="ComboBox">
+                                    <Setter Property="Padding" Value="12,10"/>
+                                    <Setter Property="BorderBrush" Value="#E0E0E0"/>
+                                    <Setter Property="BorderThickness" Value="1"/>
+                                    <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+                                    <Setter Property="FontSize" Value="14"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ComboBox">
+                                                <Grid>
+                                                    <ToggleButton Name="ToggleButton" 
+                                                                  Background="{TemplateBinding Background}"
+                                                                  BorderBrush="{TemplateBinding BorderBrush}"
+                                                                  BorderThickness="{TemplateBinding BorderThickness}"
+                                                                  IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                                                  ClickMode="Press">
+                                                        <ToggleButton.Style>
+                                                            <Style TargetType="ToggleButton">
+                                                                <Setter Property="Template">
+                                                                    <Setter.Value>
+                                                                        <ControlTemplate TargetType="ToggleButton">
+                                                                            <Border Background="{TemplateBinding Background}"
+                                                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                                                                    CornerRadius="6">
+                                                                                <Grid>
+                                                                                    <Grid.ColumnDefinitions>
+                                                                                        <ColumnDefinition Width="*"/>
+                                                                                        <ColumnDefinition Width="20"/>
+                                                                                    </Grid.ColumnDefinitions>
+                                                                                    <Path Grid.Column="1" 
+                                                                                          HorizontalAlignment="Center" 
+                                                                                          VerticalAlignment="Center" 
+                                                                                          Data="M 0 0 L 4 4 L 8 0 Z" 
+                                                                                          Fill="{StaticResource TextSecondaryBrush}"/>
+                                                                                </Grid>
+                                                                            </Border>
+                                                                        </ControlTemplate>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </Style>
+                                                        </ToggleButton.Style>
+                                                    </ToggleButton>
+                                                    <ContentPresenter Name="ContentSite" 
+                                                                      IsHitTestVisible="false" 
+                                                                      Content="{TemplateBinding SelectionBoxItem}"
+                                                                      ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                                      ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                                                      Margin="{TemplateBinding Padding}"
+                                                                      VerticalAlignment="Center"
+                                                                      HorizontalAlignment="Left"/>
+                                                    <Popup Name="Popup" 
+                                                           Placement="Bottom" 
+                                                           IsOpen="{TemplateBinding IsDropDownOpen}"
+                                                           AllowsTransparency="True" 
+                                                           Focusable="False"
+                                                           PopupAnimation="Slide">
+                                                        <Grid Name="DropDown" 
+                                                              SnapsToDevicePixels="True" 
+                                                              MinWidth="{TemplateBinding ActualWidth}"
+                                                              MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                                            <Border Name="DropDownBorder" 
+                                                                    Background="{StaticResource SurfaceBrush}" 
+                                                                    BorderThickness="1" 
+                                                                    BorderBrush="#E0E0E0"
+                                                                    CornerRadius="6">
+                                                                <Border.Effect>
+                                                                    <DropShadowEffect ShadowDepth="4" Color="Black" Opacity="0.2" BlurRadius="12"/>
+                                                                </Border.Effect>
+                                                            </Border>
+                                                            <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
+                                                                <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                                            </ScrollViewer>
+                                                        </Grid>
+                                                    </Popup>
+                                                </Grid>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsFocused" Value="True">
+                                                        <Setter TargetName="ToggleButton" Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                                                        <Setter TargetName="ToggleButton" Property="BorderThickness" Value="2"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ComboBox.Style>
+                        </ComboBox>
+                    </StackPanel>
 
-        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,10,0,0">
-            <Button Content="Thêm" Width="80" Margin="0,0,10,0" Command="{Binding AddStudentCommand}"/>
-            <Button Content="Sửa" Width="80" Margin="0,0,10,0" Command="{Binding EditStudentCommand}"/>
-            <Button Content="Xóa" Width="80" Command="{Binding DeleteStudentCommand}"/>
+                    <StackPanel Grid.Column="2" VerticalAlignment="Bottom" Orientation="Horizontal" Margin="20,0,0,0">
+                        <Button Content="🔍 Lọc" Style="{StaticResource ModernButtonStyle}" 
+                                Width="80" Margin="0,0,10,0" Command="{Binding FilterCommand}"/>
+                        <Button Content="🗑️ Xóa lọc" Style="{StaticResource SecondaryButtonStyle}" 
+                                Width="100" Command="{Binding ClearFilterCommand}"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Border>
 
-            <Button Content="Import Excel" Width="100" Margin="20,0,0,0" Command="{Binding ImportExcelCommand}" Background="SeaGreen" Foreground="White"/>
-        </StackPanel>
+        <!-- Students DataGrid -->
+        <Border Grid.Row="2" Style="{StaticResource CardStyle}" Margin="0,0,0,20">
+            <DataGrid ItemsSource="{Binding Students}" SelectedItem="{Binding SelectedStudent}" 
+                      AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
+                      GridLinesVisibility="None" HeadersVisibility="Column" 
+                      AlternatingRowBackground="#F8F9FA" RowBackground="White">
+                <DataGrid.Resources>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="Padding" Value="12,10"/>
+                        <Setter Property="FontWeight" Value="SemiBold"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                    </Style>
+                    <Style TargetType="DataGridRow">
+                        <Setter Property="Padding" Value="0,8"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#E3F2FD"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="{StaticResource PrimaryLightBrush}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="Padding" Value="12,8"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                    </Style>
+                </DataGrid.Resources>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Mã HS" Binding="{Binding StudentCode}" Width="100"/>
+                    <DataGridTextColumn Header="Họ và Tên" Binding="{Binding FullName}" Width="*"/>
+                    <DataGridTextColumn Header="Ngày Sinh" Binding="{Binding DateOfBirth, StringFormat='dd/MM/yyyy'}" Width="120"/>
+                    <DataGridTextColumn Header="Giới tính" Binding="{Binding Gender}" Width="100"/>
+                    <DataGridTextColumn Header="Lớp" Binding="{Binding ClassName}" Width="80"/>
+                    <DataGridTextColumn Header="SĐT Phụ huynh" Binding="{Binding ParentPhoneNumber}" Width="140"/>
+                    <DataGridTextColumn Header="Địa chỉ" Binding="{Binding Address}" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <!-- Action Buttons -->
+        <Border Grid.Row="3" Style="{StaticResource CardStyle}">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="➕ Thêm" Style="{StaticResource ModernButtonStyle}" 
+                        Width="100" Margin="0,0,15,0" Command="{Binding AddStudentCommand}"/>
+                <Button Content="✏️ Sửa" Style="{StaticResource SecondaryButtonStyle}" 
+                        Width="100" Margin="0,0,15,0" Command="{Binding EditStudentCommand}"/>
+                <Button Content="🗑️ Xóa" Style="{StaticResource DangerButtonStyle}" 
+                        Width="100" Margin="0,0,30,0" Command="{Binding DeleteStudentCommand}"/>
+                <Button Content="📊 Import Excel" Width="140" Command="{Binding ImportExcelCommand}">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ModernButtonStyle}">
+                            <Setter Property="Background" Value="{StaticResource SuccessBrush}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#43A047"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+        </Border>
     </Grid>
 </UserControl>

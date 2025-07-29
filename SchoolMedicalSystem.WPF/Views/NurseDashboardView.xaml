@@ -4,25 +4,79 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Margin="15">
+             d:DesignHeight="450" d:DesignWidth="800"
+             Background="Transparent">
+
+    <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="DANH SÁCH KẾ HOẠCH KHÁM BỆNH" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+        <!-- Header -->
+        <Border Grid.Row="0" Style="{StaticResource CardStyle}" Margin="0,0,0,20">
+            <StackPanel Orientation="Horizontal">
+                <Border Width="50" Height="50" Background="{StaticResource PrimaryBrush}" 
+                        CornerRadius="25" Margin="0,0,15,0">
+                    <TextBlock Text="🩺" FontSize="24" HorizontalAlignment="Center" 
+                               VerticalAlignment="Center" Foreground="White"/>
+                </Border>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="DANH SÁCH KẾ HOẠCH KHÁM BỆNH" FontSize="22" FontWeight="Bold" 
+                               Foreground="{StaticResource PrimaryBrush}"/>
+                    <TextBlock Text="Quản lý và thực hiện các kế hoạch khám sức khỏe" FontSize="14" 
+                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
 
-        <DataGrid Grid.Row="1" ItemsSource="{Binding Plans}" SelectedItem="{Binding SelectedPlan}" AutoGenerateColumns="False" IsReadOnly="True">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Tên Kế hoạch" Binding="{Binding PlanName}" Width="*"/>
-                <DataGridTextColumn Header="Lớp" Binding="{Binding ClassName}"/>
-                <DataGridTextColumn Header="Ngày khám" Binding="{Binding CheckupDate, StringFormat='dd/MM/yyyy'}"/>
-                <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}"/>
-            </DataGrid.Columns>
-        </DataGrid>
+        <!-- DataGrid -->
+        <Border Grid.Row="1" Style="{StaticResource CardStyle}" Margin="0,0,0,20">
+            <DataGrid ItemsSource="{Binding Plans}" SelectedItem="{Binding SelectedPlan}" 
+                      AutoGenerateColumns="False" IsReadOnly="True"
+                      GridLinesVisibility="None" HeadersVisibility="Column" 
+                      AlternatingRowBackground="#F8F9FA" RowBackground="White">
+                <DataGrid.Resources>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="Padding" Value="12,10"/>
+                        <Setter Property="FontWeight" Value="SemiBold"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                    </Style>
+                    <Style TargetType="DataGridRow">
+                        <Setter Property="Padding" Value="0,8"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#E3F2FD"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="{StaticResource PrimaryLightBrush}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="Padding" Value="12,8"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                    </Style>
+                </DataGrid.Resources>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Tên Kế hoạch" Binding="{Binding PlanName}" Width="*"/>
+                    <DataGridTextColumn Header="Lớp" Binding="{Binding ClassName}"/>
+                    <DataGridTextColumn Header="Ngày khám" Binding="{Binding CheckupDate, StringFormat='dd/MM/yyyy'}"/>
+                    <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
 
-        <Button Grid.Row="2" Content="Bắt đầu thực hiện" Width="150" HorizontalAlignment="Right" Margin="0,10,0,0" Command="{Binding StartCheckupCommand}"/>
+        <!-- Action Button -->
+        <Border Grid.Row="2" Style="{StaticResource CardStyle}">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="🚀 Bắt đầu thực hiện" Style="{StaticResource ModernButtonStyle}" 
+                        Width="180" Command="{Binding StartCheckupCommand}"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </UserControl>

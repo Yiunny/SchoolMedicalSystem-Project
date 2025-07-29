@@ -6,60 +6,60 @@
              xmlns:models="clr-namespace:SchoolMedicalSystem.Core.Models;assembly=SchoolMedicalSystem.Core"
              mc:Ignorable="d" 
              d:DesignHeight="500" d:DesignWidth="800"
-             Background="#F5F5F5">
-    <Grid Margin="30">
-        <StackPanel>
-            <TextBlock Text="{Binding WelcomeMessage}" FontSize="28" FontWeight="Bold" Foreground="#007ACC"/>
-            <TextBlock Text="{Binding CurrentDateTime}" FontSize="18" Foreground="Gray" Margin="0,5,0,0"/>
-            <Separator Margin="0,25"/>
+             Background="Transparent">
 
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="20">
+            <!-- Welcome header -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="{Binding WelcomeMessage}" FontSize="32" FontWeight="Bold" 
+                               Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,5"/>
+                    <TextBlock Text="{Binding CurrentDateTime}" FontSize="16" 
+                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Manager Dashboard -->
             <StackPanel Visibility="{Binding DataContext.CurrentUserRole, RelativeSource={RelativeSource AncestorType=Window}, ConverterParameter={x:Static models:UserRole.Manager}, Converter={StaticResource RoleToVisibilityConverter}}">
-                <TextBlock Text="Thông tin nhanh:" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,15"/>
+                <TextBlock Text="📊 Thông tin tổng quan" FontSize="22" FontWeight="SemiBold" 
+                           Margin="0,0,0,20" Foreground="{StaticResource TextPrimaryBrush}"/>
+
                 <UniformGrid Columns="2" Rows="1">
-                    <Border Background="White" CornerRadius="8" Padding="20" Margin="10">
-                        <Border.Effect>
-                            <DropShadowEffect ShadowDepth="2" Color="Black" Opacity="0.1" BlurRadius="10"/>
-                        </Border.Effect>
+                    <!-- Total Students Card -->
+                    <Border Style="{StaticResource CardStyle}">
                         <StackPanel>
-                            <TextBlock Text="Tổng số Học sinh" FontSize="16" Foreground="#555"/>
-                            <TextBlock Text="{Binding TotalStudents}" FontSize="36" FontWeight="Bold" Foreground="#007ACC" Margin="0,5,0,0"/>
+                            <Border Width="60" Height="60" Background="{StaticResource PrimaryBrush}" 
+                                    CornerRadius="30" Margin="0,0,0,15">
+                                <TextBlock Text="👥" FontSize="28" HorizontalAlignment="Center" 
+                                           VerticalAlignment="Center" Foreground="White"/>
+                            </Border>
+                            <TextBlock Text="Tổng số Học sinh" FontSize="16" 
+                                       Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,5"/>
+                            <TextBlock Text="{Binding TotalStudents}" FontSize="36" FontWeight="Bold" 
+                                       Foreground="{StaticResource PrimaryBrush}"/>
                         </StackPanel>
                     </Border>
-                    <Border Background="White" CornerRadius="8" Padding="20" Margin="10">
-                        <Border.Effect>
-                            <DropShadowEffect ShadowDepth="2" Color="Black" Opacity="0.1" BlurRadius="10"/>
-                        </Border.Effect>
+
+                    <!-- In Progress Plans Card -->
+                    <Border Style="{StaticResource CardStyle}">
                         <StackPanel>
-                            <TextBlock Text="Kế hoạch đang diễn ra" FontSize="16" Foreground="#555"/>
-                            <TextBlock Text="{Binding InProgressPlans}" FontSize="36" FontWeight="Bold" Foreground="OrangeRed" Margin="0,5,0,0"/>
+                            <Border Width="60" Height="60" Background="{StaticResource WarningBrush}" 
+                                    CornerRadius="30" Margin="0,0,0,15">
+                                <TextBlock Text="📅" FontSize="28" HorizontalAlignment="Center" 
+                                           VerticalAlignment="Center" Foreground="White"/>
+                            </Border>
+                            <TextBlock Text="Kế hoạch đang diễn ra" FontSize="16" 
+                                       Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,5"/>
+                            <TextBlock Text="{Binding InProgressPlans}" FontSize="36" FontWeight="Bold" 
+                                       Foreground="{StaticResource WarningBrush}"/>
                         </StackPanel>
                     </Border>
                 </UniformGrid>
             </StackPanel>
 
-            <StackPanel Visibility="{Binding DataContext.CurrentUserRole, RelativeSource={RelativeSource AncestorType=Window}, ConverterParameter={x:Static models:UserRole.Nurse}, Converter={StaticResource RoleToVisibilityConverter}}">
-                <TextBlock Text="Công việc hôm nay:" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,15"/>
-                <Border Background="White" CornerRadius="8" Padding="20">
-                    <Border.Effect>
-                        <DropShadowEffect ShadowDepth="2" Color="Black" Opacity="0.1" BlurRadius="10"/>
-                    </Border.Effect>
-                    <StackPanel>
-                        <ListView ItemsSource="{Binding TodaysPlans}" BorderThickness="0" Background="Transparent">
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn Header="Tên Kế hoạch" DisplayMemberBinding="{Binding PlanName}" Width="300"/>
-                                    <GridViewColumn Header="Lớp" DisplayMemberBinding="{Binding ClassName}" Width="100"/>
-                                    <GridViewColumn Header="Trạng thái" DisplayMemberBinding="{Binding Status}" Width="150"/>
-                                </GridView>
-                            </ListView.View>
-                        </ListView>
-                        <TextBlock Text="🎉 Không có kế hoạch nào cho hôm nay!" 
-                                   FontStyle="Italic" Margin="5" Padding="10" Background="#F9F9F9"
-                                   Visibility="{Binding TodaysPlans.Count, Converter={StaticResource InverseCountToVisibilityConverter}}"/>
-                    </StackPanel>
-                </Border>
-            </StackPanel>
+            
 
         </StackPanel>
-    </Grid>
+    </ScrollViewer>
 </UserControl>

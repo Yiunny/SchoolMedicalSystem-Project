@@ -5,13 +5,16 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:validation="clr-namespace:SchoolMedicalSystem.WPF.ValidationRules"
              mc:Ignorable="d" 
-             d:DesignHeight="500" d:DesignWidth="800">
-    <Grid Margin="15">
+             d:DesignHeight="500" d:DesignWidth="800"
+             Background="Transparent">
+
+    <Grid Margin="20">
         <Grid.Resources>
-            <Style TargetType="TextBox">
+            <Style TargetType="TextBox" BasedOn="{StaticResource ModernTextBoxStyle}">
                 <Style.Triggers>
                     <Trigger Property="Validation.HasError" Value="True">
-                        <Setter Property="BorderBrush" Value="Red"/>
+                        <Setter Property="BorderBrush" Value="{StaticResource ErrorBrush}"/>
+                        <Setter Property="BorderThickness" Value="2"/>
                         <Setter Property="ToolTip" 
                                 Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
                     </Trigger>
@@ -20,126 +23,297 @@
         </Grid.Resources>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="300"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <DockPanel Grid.Column="0">
-            <TextBlock DockPanel.Dock="Top" Text="{Binding PlanTitle}" FontWeight="Bold" Margin="0,0,0,10" TextWrapping="Wrap"/>
-            <Button DockPanel.Dock="Bottom" Content="Hoàn thành Kế hoạch" Margin="0,10,0,0"
-                    Command="{Binding CompletePlanCommand}"/>
+        <!-- Left Panel - Student List -->
+        <Border Grid.Column="0" Style="{StaticResource CardStyle}" Margin="0,0,10,0">
+            <DockPanel>
+                <!-- Plan Title -->
+                <Border DockPanel.Dock="Top" Background="{StaticResource PrimaryBrush}" 
+                        CornerRadius="8" Padding="15" Margin="0,0,0,15">
+                    <TextBlock Text="{Binding PlanTitle}" FontWeight="Bold" FontSize="16" 
+                               Foreground="White" TextWrapping="Wrap" TextAlignment="Center"/>
+                </Border>
 
-            <ListView ItemsSource="{Binding Students}" SelectedItem="{Binding SelectedStudentItem}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding FullName}">
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="Foreground" Value="Black"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsCompleted}" Value="True">
-                                                <Setter Property="Foreground" Value="Gray"/>
-                                                <Setter Property="TextDecorations" Value="Strikethrough"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                            <TextBlock Text=" ✅" Foreground="Green" Visibility="{Binding IsCompleted, Converter={StaticResource BoolToVis}}"/>
+                <!-- Complete Button -->
+                <Button DockPanel.Dock="Bottom" Content="✅ Hoàn thành Kế hoạch" 
+                        Style="{StaticResource ModernButtonStyle}" Margin="0,15,0,0"
+                        Background="{StaticResource SuccessBrush}" Command="{Binding CompletePlanCommand}"/>
+
+                <!-- Student List -->
+                <Border Background="#F8F9FA" CornerRadius="8" Padding="10">
+                    <ListView ItemsSource="{Binding Students}" SelectedItem="{Binding SelectedStudentItem}"
+                              BorderThickness="0" Background="Transparent">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="White" CornerRadius="6" Padding="12,8" Margin="0,2"
+                                        BorderBrush="#E0E0E0" BorderThickness="1">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsCompleted}" Value="True">
+                                                    <Setter Property="Background" Value="#E8F5E8"/>
+                                                    <Setter Property="BorderBrush" Value="{StaticResource SuccessBrush}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding FullName}" VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+                                                    <Setter Property="FontWeight" Value="Medium"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsCompleted}" Value="True">
+                                                            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+                                                            <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <TextBlock Text=" ✅" Foreground="{StaticResource SuccessBrush}" 
+                                                   FontSize="16" VerticalAlignment="Center"
+                                                   Visibility="{Binding IsCompleted, Converter={StaticResource BoolToVis}}"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Border>
+            </DockPanel>
+        </Border>
+
+        <!-- Right Panel - Health Record Form -->
+        <Border Grid.Column="1" Style="{StaticResource CardStyle}" Margin="10,0,0,0">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel IsEnabled="{Binding IsFormEnabled}">
+                    <!-- Patient Info Header -->
+                    <Border Background="{StaticResource SecondaryBrush}" CornerRadius="8" 
+                            Padding="15" Margin="0,0,0,20">
+                        <StackPanel>
+                            <TextBlock Text="🩺 Thông tin khám bệnh cho:" FontSize="14" 
+                                       Foreground="White" Margin="0,0,0,5"/>
+                            <TextBlock Text="{Binding SelectedStudentItem.FullName}" 
+                                       FontWeight="Bold" FontSize="18" Foreground="White"/>
                         </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </DockPanel>
+                    </Border>
 
-        <ScrollViewer Grid.Column="1" Margin="15,0,0,0" VerticalScrollBarVisibility="Auto">
-            <StackPanel IsEnabled="{Binding IsFormEnabled}">
-                <TextBlock Text="Thông tin khám bệnh cho:" Margin="0,0,0,5"/>
-                <TextBlock Text="{Binding SelectedStudentItem.FullName}" FontWeight="Bold" FontSize="16" Margin="0,0,0,15"/>
+                    <!-- Physical Measurements -->
+                    <TextBlock Text="📏 Chỉ số cơ thể" FontSize="16" FontWeight="SemiBold" 
+                               Margin="0,0,0,10" Foreground="{StaticResource TextPrimaryBrush}"/>
 
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                        <TextBlock Text="Chiều cao (cm):"/>
-                        <TextBox Margin="0,5,0,10">
-                            <TextBox.Text>
-                                <Binding Path="CurrentHealthRecord.Height" UpdateSourceTrigger="PropertyChanged">
-                                    <Binding.ValidationRules>
-                                        <validation:PositiveNumberValidationRule/>
-                                    </Binding.ValidationRules>
-                                </Binding>
-                            </TextBox.Text>
-                        </TextBox>
+                    <Grid Margin="0,0,0,15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                            <TextBlock Text="Chiều cao (cm):" Margin="0,0,0,5" 
+                                       Foreground="{StaticResource TextPrimaryBrush}" FontWeight="Medium"/>
+                            <TextBox>
+                                <TextBox.Text>
+                                    <Binding Path="CurrentHealthRecord.Height" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <validation:PositiveNumberValidationRule/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                            <TextBlock Text="Cân nặng (kg):" Margin="0,0,0,5" 
+                                       Foreground="{StaticResource TextPrimaryBrush}" FontWeight="Medium"/>
+                            <TextBox>
+                                <TextBox.Text>
+                                    <Binding Path="CurrentHealthRecord.Weight" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <validation:PositiveNumberValidationRule/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Vital Signs -->
+                    <TextBlock Text="❤️ Tim mạch" FontSize="16" FontWeight="SemiBold" 
+                               Margin="0,0,0,10" Foreground="{StaticResource TextPrimaryBrush}"/>
+
+                    <Grid Margin="0,0,0,15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                            <TextBlock Text="Huyết áp (mmHg):" Margin="0,0,0,5" 
+                                       Foreground="{StaticResource TextPrimaryBrush}" FontWeight="Medium"/>
+                            <TextBox>
+                                <TextBox.Text>
+                                    <Binding Path="CurrentHealthRecord.BloodPressure" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <validation:PositiveNumberValidationRule/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                            <TextBlock Text="Nhịp tim (lần/phút):" Margin="0,0,0,5" 
+                                       Foreground="{StaticResource TextPrimaryBrush}" FontWeight="Medium"/>
+                            <TextBox>
+                                <TextBox.Text>
+                                    <Binding Path="CurrentHealthRecord.HeartRate" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding.ValidationRules>
+                                            <validation:PositiveNumberValidationRule/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Other Health Information -->
+                    <TextBlock Text="👁️ Thông tin sức khỏe khác" FontSize="16" FontWeight="SemiBold" 
+                               Margin="0,0,0,10" Foreground="{StaticResource TextPrimaryBrush}"/>
+
+                    <StackPanel Margin="0,0,0,15">
+                        <TextBlock Text="Thị lực:" Margin="0,0,0,5" 
+                                   Foreground="{StaticResource TextPrimaryBrush}" FontWeight="Medium"/>
+                        <ComboBox ItemsSource="{Binding VisionLevels}" 
+                                  SelectedItem="{Binding CurrentHealthRecord.Vision}">
+                            <ComboBox.Style>
+                                <Style TargetType="ComboBox">
+                                    <Setter Property="Padding" Value="12,10"/>
+                                    <Setter Property="BorderBrush" Value="#E0E0E0"/>
+                                    <Setter Property="BorderThickness" Value="1"/>
+                                    <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+                                    <Setter Property="FontSize" Value="14"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ComboBox">
+                                                <Grid>
+                                                    <ToggleButton Name="ToggleButton" 
+                                                                  Background="{TemplateBinding Background}"
+                                                                  BorderBrush="{TemplateBinding BorderBrush}"
+                                                                  BorderThickness="{TemplateBinding BorderThickness}"
+                                                                  IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                                                  ClickMode="Press">
+                                                        <ToggleButton.Style>
+                                                            <Style TargetType="ToggleButton">
+                                                                <Setter Property="Template">
+                                                                    <Setter.Value>
+                                                                        <ControlTemplate TargetType="ToggleButton">
+                                                                            <Border Background="{TemplateBinding Background}"
+                                                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                                                                    CornerRadius="6">
+                                                                                <Grid>
+                                                                                    <Grid.ColumnDefinitions>
+                                                                                        <ColumnDefinition Width="*"/>
+                                                                                        <ColumnDefinition Width="20"/>
+                                                                                    </Grid.ColumnDefinitions>
+                                                                                    <Path Grid.Column="1" 
+                                                                                          HorizontalAlignment="Center" 
+                                                                                          VerticalAlignment="Center" 
+                                                                                          Data="M 0 0 L 4 4 L 8 0 Z" 
+                                                                                          Fill="{StaticResource TextSecondaryBrush}"/>
+                                                                                </Grid>
+                                                                            </Border>
+                                                                        </ControlTemplate>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </Style>
+                                                        </ToggleButton.Style>
+                                                    </ToggleButton>
+                                                    <ContentPresenter Name="ContentSite" 
+                                                                      IsHitTestVisible="false" 
+                                                                      Content="{TemplateBinding SelectionBoxItem}"
+                                                                      ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                                      ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                                                      Margin="{TemplateBinding Padding}"
+                                                                      VerticalAlignment="Center"
+                                                                      HorizontalAlignment="Left"/>
+                                                    <Popup Name="Popup" 
+                                                           Placement="Bottom" 
+                                                           IsOpen="{TemplateBinding IsDropDownOpen}"
+                                                           AllowsTransparency="True" 
+                                                           Focusable="False"
+                                                           PopupAnimation="Slide">
+                                                        <Grid Name="DropDown" 
+                                                              SnapsToDevicePixels="True" 
+                                                              MinWidth="{TemplateBinding ActualWidth}"
+                                                              MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                                            <Border Name="DropDownBorder" 
+                                                                    Background="{StaticResource SurfaceBrush}" 
+                                                                    BorderThickness="1" 
+                                                                    BorderBrush="#E0E0E0"
+                                                                    CornerRadius="6">
+                                                                <Border.Effect>
+                                                                    <DropShadowEffect ShadowDepth="4" Color="Black" Opacity="0.2" BlurRadius="12"/>
+                                                                </Border.Effect>
+                                                            </Border>
+                                                            <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
+                                                                <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                                            </ScrollViewer>
+                                                        </Grid>
+                                                    </Popup>
+                                                </Grid>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsFocused" Value="True">
+                                                        <Setter TargetName="ToggleButton" Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                                                        <Setter TargetName="ToggleButton" Property="BorderThickness" Value="2"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ComboBox.Style>
+                        </ComboBox>
                     </StackPanel>
-                    <StackPanel Grid.Column="1" Margin="10,0,0,0">
-                        <TextBlock Text="Cân nặng (kg):"/>
-                        <TextBox Margin="0,5,0,10">
-                            <TextBox.Text>
-                                <Binding Path="CurrentHealthRecord.Weight" UpdateSourceTrigger="PropertyChanged">
-                                    <Binding.ValidationRules>
-                                        <validation:PositiveNumberValidationRule/>
-                                    </Binding.ValidationRules>
-                                </Binding>
-                            </TextBox.Text>
-                        </TextBox>
+
+                    <StackPanel Margin="0,0,0,15">
+                        <TextBlock Text="Tình trạng Răng-Miệng:" Margin="0,0,0,5" 
+                                   Foreground="{StaticResource TextPrimaryBrush}" FontWeight="Medium"/>
+                        <TextBox Text="{Binding CurrentHealthRecord.DentalStatus, UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
-                </Grid>
 
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                        <TextBlock Text="Huyết áp (mmHg):"/>
-                        <TextBox Margin="0,5,0,10">
-                            <TextBox.Text>
-                                <Binding Path="CurrentHealthRecord.BloodPressure" UpdateSourceTrigger="PropertyChanged">
-                                    <Binding.ValidationRules>
-                                        <validation:PositiveNumberValidationRule/>
-                                    </Binding.ValidationRules>
-                                </Binding>
-                            </TextBox.Text>
-                        </TextBox>
+                    <StackPanel Margin="0,0,0,20">
+                        <TextBlock Text="Ghi chú thêm:" Margin="0,0,0,5" 
+                                   Foreground="{StaticResource TextPrimaryBrush}" FontWeight="Medium"/>
+                        <TextBox Text="{Binding CurrentHealthRecord.NurseNotes, UpdateSourceTrigger=PropertyChanged}" 
+                                 Height="80" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top"/>
                     </StackPanel>
-                    <StackPanel Grid.Column="1" Margin="10,0,0,0">
-                        <TextBlock Text="Nhịp tim (lần/phút):"/>
-                        <TextBox Margin="0,5,0,10">
-                            <TextBox.Text>
-                                <Binding Path="CurrentHealthRecord.HeartRate" UpdateSourceTrigger="PropertyChanged">
-                                    <Binding.ValidationRules>
-                                        <validation:PositiveNumberValidationRule/>
-                                    </Binding.ValidationRules>
-                                </Binding>
-                            </TextBox.Text>
-                        </TextBox>
-                    </StackPanel>
-                </Grid>
 
-                <TextBlock Text="Thị lực:"/>
-                <ComboBox Margin="0,5,0,10" 
-                  ItemsSource="{Binding VisionLevels}" 
-                  SelectedItem="{Binding CurrentHealthRecord.Vision}"/>
+                    <!-- BMI Result -->
+                    <Border Background="#E3F2FD" CornerRadius="8" Padding="15" Margin="0,0,0,20">
+                        <StackPanel>
+                            <TextBlock FontSize="16" FontWeight="SemiBold">
+                                <Run Text="📊 Chỉ số BMI: " Foreground="{StaticResource TextPrimaryBrush}"/>
+                                <Run Text="{Binding CurrentHealthRecord.Bmi, StringFormat='{}{0:F2}'}" 
+                                     Foreground="{StaticResource PrimaryBrush}" FontWeight="Bold"/>
+                            </TextBlock>
+                            <TextBlock FontSize="14" Margin="0,5,0,0">
+                                <Run Text="Tình trạng: " Foreground="{StaticResource TextSecondaryBrush}"/>
+                                <Run Text="{Binding CurrentHealthRecord.BmiStatus}" 
+                                     FontStyle="Italic" FontWeight="SemiBold" Foreground="{StaticResource SecondaryBrush}"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
 
-                <TextBlock Text="Tình trạng Răng-Miệng:"/>
-                <TextBox Margin="0,5,0,10" Text="{Binding CurrentHealthRecord.DentalStatus, UpdateSourceTrigger=PropertyChanged}"/>
-
-                <TextBlock Text="Ghi chú thêm:"/>
-                <TextBox Margin="0,5,0,10" Text="{Binding CurrentHealthRecord.NurseNotes, UpdateSourceTrigger=PropertyChanged}" Height="40" TextWrapping="Wrap" AcceptsReturn="True"/>
-
-                <Separator Margin="0,10"/>
-                <TextBlock Margin="0,5,0,0">
-                    <Run Text="Chỉ số BMI:" FontWeight="Bold"/>
-                    <Run Text="{Binding CurrentHealthRecord.Bmi, StringFormat='{}{0:F2}'}"/>
-                    <Run Text="-"/>
-                    <Run Text="{Binding CurrentHealthRecord.BmiStatus}" FontStyle="Italic"/>
-                </TextBlock>
-                <Button Content="Lưu Hồ sơ" Width="100" HorizontalAlignment="Left" Command="{Binding SaveRecordCommand}"/>
-            </StackPanel>
-        </ScrollViewer>
+                    <!-- Save Button -->
+                    <Button Content="💾 Lưu Hồ sơ" Style="{StaticResource ModernButtonStyle}" 
+                            Width="150" HorizontalAlignment="Left" Command="{Binding SaveRecordCommand}"/>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
     </Grid>
 </UserControl>

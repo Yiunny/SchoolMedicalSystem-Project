@@ -7,73 +7,115 @@
         mc:Ignorable="d"
         Title="Hệ Thống Y Tế Học Đường" Height="720" Width="1280"
         WindowStartupLocation="CenterScreen"
-        Background="#F5F5F5">
+        Background="{StaticResource BackgroundBrush}">
+
     <Window.Resources>
-        <Style x:Key="NavButtonStyle" TargetType="Button">
+        <Style x:Key="ModernNavButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#444444"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="Padding" Value="20,12"/>
+            <Setter Property="Padding" Value="20,14"/>
+            <Setter Property="Margin" Value="8,2"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" CornerRadius="5">
+                        <Border Background="{TemplateBinding Background}" 
+                                Padding="{TemplateBinding Padding}" 
+                                CornerRadius="10"
+                                Margin="{TemplateBinding Margin}">
                             <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#EAEAEA"/>
-                </Trigger>
-            </Style.Triggers>
         </Style>
     </Window.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="260"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" Background="White" BorderBrush="#E0E0E0" BorderThickness="0,0,1,0">
+        <!-- Sidebar -->
+        <Border Grid.Column="0" Background="{StaticResource SurfaceBrush}" BorderBrush="#E0E0E0" BorderThickness="0,0,1,0">
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="2" Color="Black" Opacity="0.1" BlurRadius="10"/>
+            </Border.Effect>
+
             <DockPanel>
-                <Button DockPanel.Dock="Bottom" Content="Đăng xuất" Margin="5" Style="{StaticResource NavButtonStyle}" Command="{Binding LogoutCommand}"/>
+                <!-- Logout button -->
+                <Button DockPanel.Dock="Bottom" Content="🚪 Đăng xuất" Margin="8,8,8,20" 
+                        Style="{StaticResource ModernNavButtonStyle}" 
+                        Command="{Binding LogoutCommand}"
+                        Background="#FFEBEE" Foreground="{StaticResource ErrorBrush}"/>
 
+                <!-- Navigation menu -->
                 <StackPanel DockPanel.Dock="Top">
-                    <TextBlock Text="Hệ Thống Y Tế" FontSize="18" FontWeight="Bold" Margin="20" HorizontalAlignment="Center" Foreground="#007ACC"/>
-                    <Separator/>
+                    <!-- Header -->
+                    <Border Background="{StaticResource PrimaryBrush}" Margin="0,0,0,20">
+                        <Border.OpacityMask>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="#FF2E7D32" Offset="0"/>
+                                <GradientStop Color="#FF4CAF50" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.OpacityMask>
+                        <StackPanel>
+                            <TextBlock Text="🏥" FontSize="24" HorizontalAlignment="Center" Foreground="White"/>
+                            <TextBlock Text="HỆ THỐNG Y TẾ" FontSize="16" FontWeight="Bold" 
+                                       HorizontalAlignment="Center" Foreground="White" Margin="0,5,0,0"/>
+                            <TextBlock Text="HỌC ĐƯỜNG" FontSize="14" 
+                                       HorizontalAlignment="Center" Foreground="White" Opacity="0.9"/>
+                        </StackPanel>
+                    </Border>
 
+                    <!-- Manager Menu -->
                     <StackPanel Visibility="{Binding CurrentUserRole, ConverterParameter={x:Static models:UserRole.Manager}, Converter={StaticResource RoleToVisibilityConverter}}">
-                        <Button Content="Trang chủ" Margin="5" Style="{StaticResource NavButtonStyle}" Command="{Binding ShowHomePageCommand}"/>
+                        <TextBlock Text="QUẢN LÝ" FontSize="12" FontWeight="Bold" 
+                                   Margin="20,0,0,10" Foreground="{StaticResource TextSecondaryBrush}"/>
 
-                        <Button Content="Quản lý HỌC SINH" 
-                            Margin="5" 
-                                Style="{StaticResource NavButtonStyle}"
-                            Command="{Binding ShowStudentManagementCommand}"
-                            />
-
-                        <Button Content="Quản lý Tài khoản" Margin="5" Style="{StaticResource NavButtonStyle}" Command="{Binding ShowAccountManagementCommand}"/>
-                        <Button Content="Lập Kế hoạch Khám" Margin="5" Style="{StaticResource NavButtonStyle}" Command="{Binding ShowCheckupPlanCommand}"/>
-                        <Button Content="Báo cáo" Margin="5" Style="{StaticResource NavButtonStyle}" Command="{Binding ShowDashboardCommand}"/>
-
-                        
+                        <Button Content="🏠 Trang chủ" Style="{StaticResource ModernNavButtonStyle}" 
+                                Command="{Binding ShowHomePageCommand}"/>
+                        <Button Content="👥 Quản lý Học sinh" Style="{StaticResource ModernNavButtonStyle}"
+                                Command="{Binding ShowStudentManagementCommand}"/>
+                        <Button Content="🔐 Quản lý Tài khoản" Style="{StaticResource ModernNavButtonStyle}" 
+                                Command="{Binding ShowAccountManagementCommand}"/>
+                        <Button Content="📅 Lập Kế hoạch Khám" Style="{StaticResource ModernNavButtonStyle}" 
+                                Command="{Binding ShowCheckupPlanCommand}"/>
+                        <Button Content="📊 Báo cáo" Style="{StaticResource ModernNavButtonStyle}" 
+                                Command="{Binding ShowDashboardCommand}"/>
                     </StackPanel>
 
+                    <!-- Nurse Menu -->
                     <StackPanel Visibility="{Binding CurrentUserRole, ConverterParameter={x:Static models:UserRole.Nurse}, Converter={StaticResource RoleToVisibilityConverter}}">
-                        <Button Content="Trang chủ" Margin="5" Style="{StaticResource NavButtonStyle}" Command="{Binding ShowHomePageCommand}"/>
-                        <Button Content="Kế hoạch Khám" Margin="5" Style="{StaticResource NavButtonStyle}" Command="{Binding ShowNurseDashboardCommand}"/>
-                        <Button Content="Tra cứu Học sinh" Margin="5" Style="{StaticResource NavButtonStyle}" Command="{Binding ShowStudentLookupCommand}"/>
+                        <TextBlock Text="Y TÁ" FontSize="12" FontWeight="Bold" 
+                                   Margin="20,0,0,10" Foreground="{StaticResource TextSecondaryBrush}"/>
+
+                        <Button Content="🏠 Trang chủ" Style="{StaticResource ModernNavButtonStyle}" 
+                                Command="{Binding ShowHomePageCommand}"/>
+                        <Button Content="📅 Kế hoạch Khám" Style="{StaticResource ModernNavButtonStyle}" 
+                                Command="{Binding ShowNurseDashboardCommand}"/>
+                        <Button Content="🔍 Tra cứu Học sinh" Style="{StaticResource ModernNavButtonStyle}" 
+                                Command="{Binding ShowStudentLookupCommand}"/>
                     </StackPanel>
                 </StackPanel>
             </DockPanel>
         </Border>
 
-        <ContentControl Grid.Column="1" Content="{Binding CurrentView}"/>
+        <!-- Main content area -->
+        <Border Grid.Column="1" Background="{StaticResource BackgroundBrush}">
+            <ContentControl Content="{Binding CurrentView}" Margin="20"/>
+        </Border>
     </Grid>
 </Window>
